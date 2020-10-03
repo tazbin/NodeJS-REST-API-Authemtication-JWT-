@@ -28,7 +28,22 @@ router.post('/register', async(req, res, next) => {
 })
 
 router.post('/login', async(req, res, next) => {
-    res.send('login router')
+    try {
+        const result = await userSchema.validateAsync(req.body)
+        const user = await userModel.findOne({ email: result.email })
+        if (!user) {
+            throw creatError.NotFound('User not registered')
+        }
+        const isMatch = await user.isValidPassword(result.password)
+        if (!isMatch) throw creatError.Unauthorized('Email/password not matched')
+
+        const accessToken = await signAccessToken(user.id)
+
+        res.send({ accessToken })
+    } catch (error) {
+        if (error.isJoi === true) error = creatError.BadRequest('Invalied email/password')
+        next(error)
+    }
 })
 
 router.post('/refresh-token', async(req, res, next) => {

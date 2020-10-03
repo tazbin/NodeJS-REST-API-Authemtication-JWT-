@@ -14,7 +14,10 @@ module.exports = {
             }
 
             jwt.sign(paylaod, secret, option, (err, token) => {
-                if (err) reject(err)
+                if (err) {
+                    console.log(err.message)
+                    reject(creatErrors.InternalServerError())
+                }
                 resolve(token)
             })
 
