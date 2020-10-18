@@ -1,57 +1,52 @@
 const express = require('express')
 const creatError = require('http-errors')
-const userModel = require('../Models/User.model')
-const { userSchema } = require('../helpers/auth_validation')
-const { signAccessToken } = require('../helpers/jwt_helper')
+const user = require('../models/user.model')
+const { authSchema } = require('../helper/auth_validation')
+const { signAccessToken } = require('../helper/jwt_helper')
 const router = express.Router()
-
 
 router.post('/register', async(req, res, next) => {
     try {
-        const result = await userSchema.validateAsync(req.body)
+        // validation
+        const result = await authSchema.validateAsync(req.body)
 
-        const emailExists = await userModel.findOne({ email: result.email })
-        if (emailExists) throw creatError.Conflict(`${result.email} already exists`)
+        // rdandent value checking
+        const existUser = await user.findOne({ email: result.email })
+        if (existUser)
+            throw creatError.Conflict(`${result.email} already exists`)
 
-        const newUser = new userModel(result)
+        // creat & save new user
+        const newUser = new user(result)
         const saveUser = await newUser.save()
             // res.send(saveUser)
         const accessToken = await signAccessToken(saveUser.id)
         res.send({ accessToken })
 
     } catch (error) {
-        if (error.isJoi === true) {
-            error.status = 422
-        }
+        if (error.isJoi === true) error.status = 422
         next(error)
     }
 })
 
-router.post('/login', async(req, res, next) => {
+router.get('/list', async(req, res, next) => {
     try {
-        const result = await userSchema.validateAsync(req.body)
-        const user = await userModel.findOne({ email: result.email })
-        if (!user) {
-            throw creatError.NotFound('User not registered')
-        }
-        const isMatch = await user.isValidPassword(result.password)
-        if (!isMatch) throw creatError.Unauthorized('Email/password not matched')
-
-        const accessToken = await signAccessToken(user.id)
-
-        res.send({ accessToken })
+        // const allUsers = await user.find()
+        res.send('allUsers')
     } catch (error) {
-        if (error.isJoi === true) error = creatError.BadRequest('Invalied email/password')
         next(error)
     }
 })
 
-router.post('/refresh-token', async(req, res, next) => {
-    res.send('refresh-token router')
+router.post('/login', (req, res, next) => {
+    res.send('login router')
 })
 
-router.delete('/logout', async(req, res, next) => {
-    res.send('logout route')
+router.delete('/logout', (req, res, next) => {
+    res.send('logout router')
+})
+
+router.post('/refresh-token', (req, res, next) => {
+    res.send('refresh-token router')
 })
 
 module.exports = router

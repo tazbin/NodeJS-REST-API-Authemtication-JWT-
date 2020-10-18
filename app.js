@@ -1,24 +1,28 @@
 const express = require('express')
-const creatError = require('http-errors')
+const creatErrors = require('http-errors')
 require('dotenv').config()
-require('./helpers/init_mongo_db')
-
-// route imports
-const authRoutes = require('./Routes/Auth.route')
-
-const app = express()
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+require('./helper/init_mongodb')
 
 // routes
-app.get('/', async(req, res, next) => {
-    res.send('hello from server')
+const authRoute = require('./routes/auth.route')
+
+const app = express()
+const PORT = process.env.PORT || 3000
+app.use(express.json())
+
+// define routes
+app.get('/', (req, res, next) => {
+    res.send('hello from get request')
 })
 
-app.use('/auth', authRoutes)
+app.use('/auth', authRoute)
 
+// handle wildcard routes
 app.use(async(req, res, next) => {
-    next(creatError.NotFound('This route does not exits'))
+    // const err = new Error('Not found')
+    // err.status = 404
+    // next(err)
+    next(creatErrors.NotFound('This route does not exits'))
 })
 
 app.use((err, req, res, next) => {
@@ -31,7 +35,7 @@ app.use((err, req, res, next) => {
     })
 })
 
-const port = process.env.PORT || 3000
-app.listen(port, () => {
-    console.log(`server listening to port ${port}...`)
+// start the server
+app.listen(PORT, () => {
+    console.log(`server running at port ${PORT}...`)
 })

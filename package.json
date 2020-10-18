@@ -1,16 +1,17 @@
 {
     "name": "rest_api",
     "version": "1.0.0",
-    "description": "This is a node js rest api with jwt authentication (protection ready)",
-    "main": "index.js",
+    "description": "",
+    "main": "app.js",
     "scripts": {
-        "start": "nodemon app.js"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "nodemon app"
     },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tazbin/NodeJS-REST-API-Authentication-JWT.git"
     },
-    "author": "Tazbinur Rahaman",
+    "author": "Tazbinur",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/tazbin/NodeJS-REST-API-Authentication-JWT/issues"
@@ -23,6 +24,7 @@
         "express": "^4.17.1",
         "http-errors": "^1.8.0",
         "jsonwebtoken": "^8.5.1",
-        "mongoose": "^5.10.7"
+        "mongoose": "^5.10.9",
+        "redis": "^3.0.2"
     }
 }
