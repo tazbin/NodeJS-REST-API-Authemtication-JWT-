@@ -1,7 +1,9 @@
 const express = require('express')
 const creatErrors = require('http-errors')
+const { verifyAccessToken } = require('./helper/jwt_helper')
 require('dotenv').config()
 require('./helper/init_mongodb')
+require('./helper/init_redis')
 
 // routes
 const authRoute = require('./routes/auth.route')
@@ -11,7 +13,8 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 
 // define routes
-app.get('/', (req, res, next) => {
+app.get('/', verifyAccessToken, (req, res, next) => {
+    console.log(req.payload.aud)
     res.send('hello from get request')
 })
 
